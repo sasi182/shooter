@@ -24,11 +24,11 @@ class Game:
         # gun timer
         self.can_shoot = True
         self.shoot_time = 0
-        self.gun_cooldown = 400
+        self.gun_cooldown = 200
 
         # enemy timer
         self.enemy_event = pygame.event.custom_type()
-        pygame.time.set_timer(self.enemy_event, 300)
+        pygame.time.set_timer(self.enemy_event, 1000)
         self.spawn_positions = []
 
         # audio
@@ -71,18 +71,18 @@ class Game:
                 self.can_shoot = True
 
     def setup(self):
-        map = load_pygame(join('data', 'maps', 'world.tmx'))
+        map = load_pygame(join('data', 'maps', 'world01.tmx'))
         for x,y, image in map.get_layer_by_name('ground').tiles():
             Sprite((x * TILE_SIZE,y * TILE_SIZE), image, self.all_sprites)
 
-        for x,y, image in map.get_layer_by_name('ground_details').tiles():
-            Sprite((x * TILE_SIZE,y * TILE_SIZE), image, self.all_sprites)
-
-        for x,y, image in map.get_layer_by_name('stairs').tiles():
-            Sprite((x * TILE_SIZE,y * TILE_SIZE), image, self.all_sprites)
-
         for obj in map.get_layer_by_name('collisions'):
-            CollisionSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+            if hasattr(obj, "image") and obj.image:  # hat Bild
+                CollisionSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+            else:  # nur Rechteck
+                surf = pygame.Surface((obj.width, obj.height), pygame.SRCALPHA)
+                # Optional: Debugfarbe sichtbar machen
+                surf.fill((255, 0, 0, 100))  # rot halbtransparent
+                CollisionSprite((obj.x, obj.y), surf, (self.all_sprites, self.collision_sprites))
 
         for obj in map.get_layer_by_name('entities'):
             if obj.name == 'Player': 
