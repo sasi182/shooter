@@ -1,0 +1,18 @@
+Virtuele Python Umgebung
+
+cd /home/sandro/Desktop/shooter/
+
+python3 -m venv venv
+
+source venv/bin/activate
+
+so sollte danach die CLI aussehen:       (venv) sandro@fedora
+
+pip install pygame-ce
+
+code .
+
+
+Danach im VS code weiter
+
+Strg + Shift + P -> Python: Interpreter auswählen -> ./venv/bin/python
