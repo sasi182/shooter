@@ -3,6 +3,7 @@ from player import Player
 from sprites import *
 from pytmx.util_pygame import load_pygame
 from groups import AllSprites
+from weapon_data import weapon_data
 
 from random import randint, choice
 
@@ -24,13 +25,13 @@ class Game:
         # gun timer
         self.can_shoot = True
         self.shoot_time = 0
-        self.gun_cooldown = 200
 
         # Wapon-list
-        gun_folder = join('images', 'gun')
-        self.weapon_types = [splitext(f)[0] for f in listdir(gun_folder) if f.endswith('.png')]
+        self.weapon_types = list(weapon_data.keys())
         self.weapon_index = 0
-        
+        self.gun_cooldown = weapon_data[self.weapon_types[self.weapon_index]]['cooldown']
+
+
         # enemy timer
         self.enemy_event = pygame.event.custom_type()
         pygame.time.set_timer(self.enemy_event, 1000)
@@ -49,8 +50,11 @@ class Game:
         self.setup()
 
     def load_images(self):
-        self.bullet_surf = pygame.image.load(join('images', 'gun', 'bullet.png')).convert_alpha()
-
+        self.bullet_surfs = {}
+        for weapon, data in weapon_data.items():
+            path = join('images', 'gun', data['bullet_image'])
+            self.bullet_surfs[weapon] = pygame.image.load(path).convert_alpha()
+    
         folders = list(walk(join('images', 'enemies')))[0][1]
         self.enemy_frames = {}
         for folder in folders:
@@ -64,8 +68,30 @@ class Game:
     def input(self):
         if pygame.mouse.get_pressed()[0] and self.can_shoot:
             self.shoot_sound.play()
-            pos = self.gun.rect.center + self.gun.player_direction * 50
-            Bullet(self.bullet_surf, pos, self.gun.player_direction, (self.all_sprites, self.bullet_sprites))
+
+            weapon = self.gun.weapon_type
+            data = weapon_data[weapon]
+
+            pos = self.gun.rect.center
+            base_dir = self.gun.player_direction
+
+            count = data['bullets_per_shot']
+            spread = data['spread_angle']
+            speed = data['bullet_speed']
+
+            # Kugeln mit Winkelabweichung erzeugen
+            for i in range(count):
+                # Gleichmäßige Verteilung der Winkel, z.B. -spread/2 bis +spread/2
+                if count > 1:
+                    angle_offset = -spread/2 + (spread/(count-1)) * i
+                else:
+                    angle_offset = 0
+
+                # Richtung rotieren
+                dir_vector = base_dir.rotate(angle_offset)
+
+                Bullet(self.bullet_surfs[weapon], pos, dir_vector, (self.all_sprites, self.bullet_sprites), speed)
+
             self.can_shoot = False
             self.shoot_time = pygame.time.get_ticks()
 

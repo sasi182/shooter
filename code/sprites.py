@@ -50,15 +50,15 @@ class Gun(pygame.sprite.Sprite):
         self.rect.center = self.player.rect.center + self.player_direction * self.distance
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, surf, pos, direction, groups):
+    def __init__(self, surf, pos, direction, groups, speed):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_frect(center = pos)
         self.spawn_time = pygame.time.get_ticks()
         self.lifetime = 1000
 
-        self.direction = direction
-        self.speed = 700
+        self.direction = pygame.Vector2(direction).normalize()
+        self.speed = speed
 
     def update(self, dt):
         self.rect.center += self.direction * self.speed * dt
