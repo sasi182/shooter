@@ -1,5 +1,7 @@
 from settings import *
 from math import atan2, degrees
+from os import listdir
+from os.path import splitext, join
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
@@ -15,15 +17,19 @@ class CollisionSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(topleft = pos)
 
 class Gun(pygame.sprite.Sprite):
-    def __init__(self, player, groups):
+    #Waffenliste
+    weapon_types = [splitext(f)[0] for f in listdir(join('images', 'gun')) if f.endswith('.png')]
+    
+    def __init__(self, player, weapon_type, groups):
         self.player = player
         self.distance = 90
         self.always_top = True
+        self.weapon_type = weapon_type
         self.player_direction = pygame.Vector2(1, 0)  # Standard nach rechts
 
         # Sprite setup
         super().__init__(groups)
-        self.gun_surf = pygame.image.load(join('images', 'gun', 'gun.png')).convert_alpha()
+        self.gun_surf = pygame.image.load(join('images', 'gun', f'{self.weapon_type}.png')).convert_alpha()
         self.image = self.gun_surf
         self.rect = self.image.get_frect(center=self.player.rect.center + self.player_direction * self.distance)
 

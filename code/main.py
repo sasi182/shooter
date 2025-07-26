@@ -26,6 +26,11 @@ class Game:
         self.shoot_time = 0
         self.gun_cooldown = 200
 
+        # Wapon-list
+        gun_folder = join('images', 'gun')
+        self.weapon_types = [splitext(f)[0] for f in listdir(gun_folder) if f.endswith('.png')]
+        self.weapon_index = 0
+        
         # enemy timer
         self.enemy_event = pygame.event.custom_type()
         pygame.time.set_timer(self.enemy_event, 1000)
@@ -87,7 +92,7 @@ class Game:
         for obj in map.get_layer_by_name('entities'):
             if obj.name == 'Player': 
                 self.player = Player((obj.x,obj.y), self.all_sprites, self.collision_sprites)
-                self.gun = Gun(self.player, self.all_sprites)
+                self.gun = Gun(self.player, self.weapon_types[self.weapon_index], self.all_sprites)
             else:
                 self.spawn_positions.append((obj.x, obj.y))
 
@@ -116,6 +121,11 @@ class Game:
                         self.running = False
                 if event.type == self.enemy_event:
                     Enemy(choice(self.spawn_positions), choice(list(self.enemy_frames.values())), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 3: # Rechtsklick
+                        self.weapon_index = (self.weapon_index + 1) % len(self.weapon_types)
+                        self.gun.kill()  # Alte Waffe entferne
+                        self.gun = Gun(self.player, self.weapon_types[self.weapon_index], self.all_sprites)
 
             #update
             self.gun_timer()
