@@ -72,7 +72,7 @@ class Enemy(pygame.sprite.Sprite):
 
         # rect
         self.rect = self.image.get_frect(center = pos)
-        self.hitbox_rect = self.rect.inflate (-20, -40)
+        self.hitbox_rect = self.rect.inflate (0, 0)
         self.collision_sprites = collision_sprites
         self.direction = pygame.Vector2()
         self.speed = 50
@@ -88,7 +88,7 @@ class Enemy(pygame.sprite.Sprite):
     def move(self, dt):
         # get direction
         player_pos = pygame.Vector2(self.player.rect.center)
-        enemy_pos = pygame.Vector2(self.rect.center)
+        enemy_pos = pygame.Vector2(self.hitbox_rect.center)
         self.direction = (player_pos - enemy_pos).normalize()
 
         # update the rect position + collision
