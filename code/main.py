@@ -4,6 +4,8 @@ from sprites import *
 from pytmx.util_pygame import load_pygame
 from groups import AllSprites
 from weapon_data import weapon_data
+from os import walk
+from os.path import join
 
 from random import randint, choice
 
@@ -58,8 +60,8 @@ class Game:
         folders = list(walk(join('images', 'enemies')))[0][1]       # Liste aller Namen der Unterordner von enemies
         self.enemy_frames = {}  # leeres Dict.
         for folder in folders:
+            self.enemy_frames[folder] = []
             for folder_path, _, file_names in walk(join('images', 'enemies', folder)):
-                self.enemy_frames[folder] = []
                 for file_name in sorted(file_names, key = lambda name: int(name.split('.')[0])):    # Numerische Sortierung der Bilder    
                     full_path = join(folder_path, file_name)
                     surf = pygame.image.load(full_path).convert_alpha()
