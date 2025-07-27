@@ -1,5 +1,5 @@
-from settings import *
-from player import Player
+from settings import *  # alles aus Settings importieren
+from player import Player # Klasse Player aus player importiern
 from sprites import *
 from pytmx.util_pygame import load_pygame
 from groups import AllSprites
@@ -10,11 +10,11 @@ from random import randint, choice
 class Game:
     def __init__(self):
         # setup
-        pygame.init()
-        self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption('Survivor')
-        self.clock = pygame.time.Clock()
-        self.running = True
+        pygame.init()       # pygame initialisieren
+        self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))   # Spielfenster definieren; aus settings.py
+        pygame.display.set_caption('Survivor')  #Spielfenster Titel setzen
+        self.clock = pygame.time.Clock()    # Erstellt Clock
+        self.running = True     # wen False wird spiel Beendet
 
         # groups
         self.all_sprites = AllSprites()
@@ -27,15 +27,15 @@ class Game:
         self.shoot_time = 0
 
         # Wapon-list
-        self.weapon_types = list(weapon_data.keys())
-        self.weapon_index = 0
-        self.gun_cooldown = weapon_data[self.weapon_types[self.weapon_index]]['cooldown']
+        self.weapon_types = list(weapon_data.keys())        # Liest die keys aus dem Diconary weapon_data // list wandet dict. ind liste um
+        self.weapon_index = 0       # erste Waffe in der Liste
+        self.gun_cooldown = weapon_data[self.weapon_types[self.weapon_index]]['cooldown'] # dict[Key[Key['Value'] = z.B. 300
 
 
         # enemy timer
-        self.enemy_event = pygame.event.custom_type()
-        pygame.time.set_timer(self.enemy_event, 1000)
-        self.spawn_positions = []
+        self.enemy_event = pygame.event.custom_type()       # erstelt einen Event
+        pygame.time.set_timer(self.enemy_event, 1000)       # 1000ms ein Event in der Queue von pygame
+        self.spawn_positions = []                           # erstelt leere Liste
 
         # audio
         self.shoot_sound = pygame.mixer.Sound(join('audio', 'shoot.wav'))
@@ -43,31 +43,31 @@ class Game:
         self.impact_sound = pygame.mixer.Sound(join('audio', 'impact.wav'))
         self.music = pygame.mixer.Sound(join('audio', 'music.mp3'))
         self.music.set_volume(0.3)
-        self.music.play(loops=  -1)
+        self.music.play(loops=  -1)     # -1 Endlosschleide // 0 einmale abspielen // 1 einmal abspielen und eine Wiederholung 
 
         # setup
         self.load_images()
         self.setup()
 
     def load_images(self):
-        self.bullet_surfs = {}
-        for weapon, data in weapon_data.items():
+        self.bullet_surfs = {}  # erstellt ein leeres Dict.
+        for weapon, data in weapon_data.items():    # for key, value in dictionary         
             path = join('images', 'gun', data['bullet_image'])
-            self.bullet_surfs[weapon] = pygame.image.load(path).convert_alpha()
+            self.bullet_surfs[weapon] = pygame.image.load(path).convert_alpha() # Läd alle bullet bilder mit dem Namen der dazugehöringen Waffe
     
-        folders = list(walk(join('images', 'enemies')))[0][1]
-        self.enemy_frames = {}
+        folders = list(walk(join('images', 'enemies')))[0][1]       # Liste aller Namen der Unterordner von enemies
+        self.enemy_frames = {}  # leeres Dict.
         for folder in folders:
             for folder_path, _, file_names in walk(join('images', 'enemies', folder)):
                 self.enemy_frames[folder] = []
-                for file_name in sorted(file_names, key = lambda name: int(name.split('.')[0])):
+                for file_name in sorted(file_names, key = lambda name: int(name.split('.')[0])):    # Numerische Sortierung der Bilder    
                     full_path = join(folder_path, file_name)
                     surf = pygame.image.load(full_path).convert_alpha()
-                    self.enemy_frames[folder].append(surf)
+                    self.enemy_frames[folder].append(surf)      # append = Element an Ende der Liste hinzufügen
 
     def input(self):
-        if pygame.mouse.get_pressed()[0] and self.can_shoot:
-            self.shoot_sound.play()
+        if pygame.mouse.get_pressed()[0] and self.can_shoot:    # linke Taste und can_shoot True
+            self.shoot_sound.play() # Sound abspielen
 
             weapon = self.gun.weapon_type
             data = weapon_data[weapon]
@@ -93,21 +93,21 @@ class Game:
                 Bullet(self.bullet_surfs[weapon], pos, dir_vector, (self.all_sprites, self.bullet_sprites), speed)
 
             self.can_shoot = False
-            self.shoot_time = pygame.time.get_ticks()
+            self.shoot_time = pygame.time.get_ticks()   # setz jetzigen Zeitpunkt in ms
 
     def gun_timer(self):
         if not self.can_shoot:
             current_time = pygame.time.get_ticks()
-            if current_time - self.shoot_time >= self.gun_cooldown:
+            if current_time - self.shoot_time >= self.gun_cooldown: # wen Zeit jetzt minus Zeit Schuss grösser als cooldown
                 self.can_shoot = True
 
     def setup(self):
-        map = load_pygame(join('data', 'maps', 'world01.tmx'))
-        for x,y, image in map.get_layer_by_name('ground').tiles():
-            Sprite((x * TILE_SIZE,y * TILE_SIZE), image, self.all_sprites)
+        map = load_pygame(join('data', 'maps', 'world01.tmx'))  # lade ein TMX File für die Tiles 
+        for x,y, image in map.get_layer_by_name('ground').tiles():      # X und Y sind nur punkte auf dem Korindatensystem von der map
+            Sprite((x * TILE_SIZE,y * TILE_SIZE), image, self.all_sprites)  # X und Y mit anzahl Pixel von Tile multiplizieren
 
         for obj in map.get_layer_by_name('collisions'):
-            if hasattr(obj, "image") and obj.image:  # hat Bild
+            if hasattr(obj, "image") and obj.image:  # objekt hat attribut image und image ist nicht None
                 CollisionSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
             else:  # nur Rechteck
                 surf = pygame.Surface((obj.width, obj.height), pygame.SRCALPHA)
@@ -137,20 +137,20 @@ class Game:
             self.running = False
 
     def run(self):
-        while self.running:
+        while self.running:     # Loop solange self.running True ist
             #dt
-            dt=self.clock.tick() / 1000
+            dt=self.clock.tick() / 1000      #Zeit seit letztem Frame in Millisekunden /1000 = Sekunden
 
             #event loop
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                        self.running = False
+                if event.type == pygame.QUIT:   # Wen pygmae Event Quit 
+                        self.running = False    # self.running = False
                 if event.type == self.enemy_event:
                     Enemy(choice(self.spawn_positions), choice(list(self.enemy_frames.values())), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 3: # Rechtsklick
-                        self.weapon_index = (self.weapon_index + 1) % len(self.weapon_types)
-                        self.gun.kill()  # Alte Waffe entferne
+                        self.weapon_index = (self.weapon_index + 1) % len(self.weapon_types) # Len berechnet Rest einer Division // 0/3=0 1/3=1 2/3=2 3/3=0
+                        self.gun.kill()  # Prite der alten Waffe entfernen
                         self.gun = Gun(self.player, self.weapon_types[self.weapon_index], self.all_sprites)
 
             #update
