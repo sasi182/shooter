@@ -8,7 +8,7 @@ weapon_data = {
     },
     "bullet": {
         "bullet_image": "bullet.png",
-        "bullets_per_shot": 6,
+        "bullets_per_shot": 3,
         "spread_angle": 30,
         "cooldown": 600,
         "bullet_speed": 600,
