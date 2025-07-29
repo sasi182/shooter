@@ -74,16 +74,13 @@
   <object id="34" x="320" y="192" width="1248" height="128"/>
  </objectgroup>
  <objectgroup id="5" name="entities">
-  <object id="1" name="Player" x="877.567" y="690.586">
+  <object id="1" name="Player" x="959.128" y="645.436">
    <point/>
   </object>
   <object id="3" name="enemy" x="1119.86" y="419.85">
    <point/>
   </object>
-  <object id="7" name="enemy" x="660.647" y="758.663">
-   <point/>
-  </object>
-  <object id="8" name="enemy" x="1136.84" y="754.804">
+  <object id="7" name="enemy" x="606.758" y="438.244">
    <point/>
   </object>
  </objectgroup>

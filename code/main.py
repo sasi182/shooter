@@ -114,7 +114,7 @@ class Game:
             else:  # nur Rechteck
                 surf = pygame.Surface((obj.width, obj.height), pygame.SRCALPHA)
                 # Optional: Debugfarbe sichtbar machen
-                surf.fill((255, 0, 0, 100))  # rot halbtransparent
+                #surf.fill((255, 0, 0, 100))  # rot halbtransparent
                 CollisionSprite((obj.x, obj.y), surf, (self.all_sprites, self.collision_sprites))
 
         for obj in map.get_layer_by_name('entities'):
